@@ -130,7 +130,8 @@ function linkForFooter(item: string) {
   if (["Journal"].includes(item)) return "/journal";
   if (["Our Story"].includes(item)) return "/about";
   if (["New Arrivals", "Men", "Women", "Unisex", "Accessories", "Shipping", "Returns", "Size Guide", "FAQs"].includes(item)) return "/shop";
-  if (["Contact", "Privacy", "Terms"].includes(item)) return "/about";
+  if (["Privacy", "Terms"].includes(item)) return "/about";
+  if (item === "Contact") return "/contact";
   return "/shop";
 }
 
@@ -208,7 +209,7 @@ function Navbar() {
               </Button>
             </div>
             <div className="mt-12 flex flex-col gap-6 text-lg uppercase tracking-[0.16em]">
-              {[...navItems, ["Wishlist", "/wishlist"] as const, ["Contact", "/about"] as const].map(([label, path]) => (
+              {[...navItems, ["Wishlist", "/wishlist"] as const, ["Contact", "/contact"] as const].map(([label, path]) => (
                 <Link key={label} to={path} onClick={() => setMobileOpen(false)} className="focus-ivora">
                   {label}
                 </Link>
@@ -306,7 +307,7 @@ function HeroCarousel() {
           <p className="mt-4 max-w-md text-base leading-7 text-muted-foreground">{slide.text}</p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Button asChild variant="editorial" size="lg">
-              <Link to="/product/$slug" params={{ slug: slide.slug }}>
+              <Link to={slide.ctaPath}>
                 {slide.cta}
               </Link>
             </Button>
@@ -428,7 +429,7 @@ function CategorySection() {
         <SectionHeader label="Shop by Category" title="Four ways into IVORA" />
         <div className="grid gap-4 md:grid-cols-4">
           {["Men", "Women", "Unisex", "Accessories"].map((category, index) => (
-            <Link key={category} to="/shop" search={{ category: category === "Accessories" ? "Accessories" : "" }} className="group focus-ivora relative min-h-[430px] overflow-hidden rounded-sm">
+            <Link key={category} to="/shop" className="group focus-ivora relative min-h-[430px] overflow-hidden rounded-sm">
               <img src={categoryImages[index]} alt={`${category} IVORA category`} width={900} height={1200} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" />
               <span className="absolute inset-0 bg-primary/20 transition-colors group-hover:bg-primary/30" />
               <span className="absolute bottom-5 left-5 text-background">
@@ -600,9 +601,9 @@ export function ArticleCard({ article }: { article: (typeof articles)[number] })
       <p className="mt-4 editorial-label">{article.category}</p>
       <h3 className="mt-2 font-display text-3xl leading-tight">{article.title}</h3>
       <p className="mt-3 text-sm leading-6 text-muted-foreground">{article.description}</p>
-      <Button variant="link" className="mt-3 px-0">
+      <Link to="/journal/$slug" params={{ slug: article.slug }} className="focus-ivora mt-3 inline-block text-xs font-semibold uppercase tracking-[0.18em] underline underline-offset-4">
         Read
-      </Button>
+      </Link>
     </article>
   );
 }
@@ -752,6 +753,7 @@ export function ProductDetailPage({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const { addToCart, addManyToCart, toggleWishlist, isWishlisted } = useIvoraStore();
+  const navigate = useNavigate();
   const recommendations = recommendProducts(product, 3);
   const wished = isWishlisted(product.id);
 
@@ -801,6 +803,7 @@ export function ProductDetailPage({ product }: { product: Product }) {
               variant="sage"
               onClick={() => {
                 addToCart(product, selectedSize, selectedColor, quantity);
+                navigate({ to: "/checkout" });
               }}
             >
               Buy Now
@@ -1086,7 +1089,7 @@ function CartLine({ item, product, updateQuantity, removeFromCart }: { item: Car
 }
 
 function MiniCart() {
-  const { miniCart, openCart } = useIvoraStore();
+  const { miniCart, openCart, dismissMiniCart } = useIvoraStore();
   if (!miniCart) return null;
   return (
     <div className="fixed bottom-5 right-5 z-50 w-[calc(100%-2.5rem)] max-w-sm rounded-sm glass-panel-strong p-4 shadow-sm">
@@ -1097,7 +1100,7 @@ function MiniCart() {
           <p className="text-sm font-semibold">{miniCart.name}</p>
           <div className="mt-4 flex gap-2">
             <Button variant="editorial" size="sm" onClick={openCart}>View Bag</Button>
-            <Button variant="outline" size="sm">Continue Shopping</Button>
+            <Button variant="outline" size="sm" onClick={dismissMiniCart}>Continue Shopping</Button>
           </div>
         </div>
       </div>
