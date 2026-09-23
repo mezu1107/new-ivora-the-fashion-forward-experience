@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
+import bannerDrop from "@/assets/ivora-banner-drop.jpg";
+import bannerAccessories from "@/assets/ivora-banner-accessories.jpg";
 import {
   articles,
   campaignImages,
@@ -230,12 +232,15 @@ export function HomePage() {
   return (
     <main>
       <HeroCarousel />
-      <section className="mx-auto max-w-[1500px] px-5 py-20 sm:px-8 lg:px-12">
+      <MarqueeStrip />
+      <Reveal as="section" className="mx-auto max-w-[1500px] px-5 py-20 sm:px-8 lg:px-12">
         <SectionHeader label="New Arrivals" title="Recently arrived at IVORA" action={<LinkText to="/shop">Shop all</LinkText>} />
         <ProductGrid products={newArrivals} />
-      </section>
-      <CategorySection />
-      <EditorialBanner />
+      </Reveal>
+      <DropBanner />
+      <Reveal><CategorySection /></Reveal>
+      <SplitBanners />
+      <Reveal><EditorialBanner /></Reveal>
       <section className="mx-auto max-w-[1500px] px-5 py-20 sm:px-8 lg:px-12">
         <SectionHeader label="What's your mood?" title="Dress by intention" />
         <div className="grid gap-4 md:grid-cols-4">
@@ -266,12 +271,110 @@ export function HomePage() {
           ))}
         </div>
       </section>
-      <FeaturedProducts />
-      <BuildYourLook />
-      <JournalPreview />
-      <AboutPreview />
-      <NewsletterBand />
+      <Reveal><FeaturedProducts /></Reveal>
+      <Reveal><BuildYourLook /></Reveal>
+      <Reveal><JournalPreview /></Reveal>
+      <Reveal><AboutPreview /></Reveal>
+      <Reveal><NewsletterBand /></Reveal>
     </main>
+  );
+}
+
+export function Reveal({ children, className = "", as = "div" }: { children: React.ReactNode; className?: string; as?: "div" | "section" }) {
+  const ref = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) { setVisible(true); io.disconnect(); }
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const Tag = as;
+  return (
+    <Tag ref={ref as React.Ref<HTMLDivElement>} className={`reveal ${visible ? "is-visible" : ""} ${className}`}>
+      {children}
+    </Tag>
+  );
+}
+
+function MarqueeStrip() {
+  const items = ["New Season AW26", "Complimentary delivery over $250", "The Signature Jacket — back in stock", "Free returns within 30 days", "Limited Edition Drop 03"];
+  const row = [...items, ...items];
+  return (
+    <div className="overflow-hidden border-y border-border bg-primary py-4 text-primary-foreground" aria-label="IVORA announcements">
+      <div className="marquee-track flex w-max gap-12 whitespace-nowrap">
+        {row.map((item, i) => (
+          <span key={i} aria-hidden={i >= items.length} className="flex items-center gap-12 text-xs font-semibold uppercase tracking-[0.28em]">
+            {item}
+            <span className="h-1 w-1 rounded-full bg-sage" />
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DropBanner() {
+  return (
+    <Reveal as="section" className="px-5 sm:px-8 lg:px-12">
+      <Link to="/collections" className="group relative mx-auto block h-[78vh] min-h-[520px] max-w-[1500px] overflow-hidden rounded-sm focus-ivora">
+        <img src={bannerDrop} alt="IVORA Drop 03 olive wool overcoat" width={1600} height={912} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-105" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/15 to-transparent" />
+        <div className="relative flex h-full flex-col justify-between p-8 text-primary-foreground sm:p-12 lg:p-16">
+          <span className="glass-panel inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground">
+            <span className="pulse-dot h-2 w-2 rounded-full bg-sage" /> Just dropped
+          </span>
+          <div className="max-w-xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary-foreground/80">Limited Edition — Drop 03</p>
+            <h2 className="mt-4 font-display text-6xl leading-[0.9] sm:text-8xl">Quiet<br />Structure.</h2>
+            <p className="mt-5 max-w-sm text-base leading-7 text-primary-foreground/85">Double-faced wool, olive tones and a longer line. Made in small numbers for the season ahead.</p>
+            <span className="mt-8 inline-flex items-center gap-3 border-b border-primary-foreground pb-1 text-xs font-semibold uppercase tracking-[0.24em]">
+              Shop the drop <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+            </span>
+          </div>
+        </div>
+      </Link>
+    </Reveal>
+  );
+}
+
+function SplitBanners() {
+  return (
+    <section className="mx-auto grid max-w-[1500px] gap-5 px-5 py-20 sm:px-8 md:grid-cols-[1.1fr_0.9fr] lg:px-12">
+      <Reveal>
+        <Link to="/shop" search={{ category: "Accessories" } as never} className="lift group relative block h-[560px] overflow-hidden rounded-sm focus-ivora">
+          <img src={bannerAccessories} alt="IVORA accessories: tote, sneakers and jewelry" width={1200} height={1408} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
+          <div className="absolute inset-x-5 bottom-5 glass-panel-strong rounded-sm p-6">
+            <p className="editorial-label">The Finishing Edit</p>
+            <h3 className="mt-2 font-display text-4xl leading-none">Accessories, considered.</h3>
+            <span className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em]">Discover <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+          </div>
+        </Link>
+      </Reveal>
+      <Reveal>
+        <div className="flex h-[560px] flex-col gap-5">
+          <Link to="/shop" className="lift group relative flex flex-1 flex-col justify-between overflow-hidden rounded-sm bg-sage p-8 text-primary-foreground focus-ivora">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em]">Members preview</p>
+            <div>
+              <p className="font-display text-7xl leading-none sm:text-8xl">15% <span className="text-4xl">off</span></p>
+              <p className="mt-3 max-w-xs text-sm leading-6 text-primary-foreground/85">Your first IVORA order when you join the IVORA World.</p>
+              <span className="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em]">Shop now <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+            </div>
+          </Link>
+          <Link to="/journal" className="lift group relative flex-1 overflow-hidden rounded-sm focus-ivora">
+            <img src={campaignImages.three} alt="IVORA Journal story" width={1600} height={1200} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
+            <div className="absolute inset-0 bg-primary/35" />
+            <div className="relative flex h-full flex-col justify-end p-8 text-primary-foreground">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em]">IVORA Journal</p>
+              <h3 className="mt-2 font-display text-4xl leading-none">Inside AW26</h3>
+            </div>
+          </Link>
+        </div>
+      </Reveal>
+    </section>
   );
 }
 
@@ -312,7 +415,7 @@ function HeroCarousel() {
           height={1200}
           loading={heroIndex === 0 ? "eager" : "lazy"}
           fetchPriority={heroIndex === 0 ? "high" : "auto"}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${heroIndex === index ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${heroIndex === index ? "opacity-100 ken-burns" : "opacity-0"}`}
         />
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/35 to-primary/10" />
@@ -325,7 +428,7 @@ function HeroCarousel() {
           <p className="mt-7 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/90">{slide.product}</p>
           <p className="mt-3 max-w-md text-base leading-7 text-primary-foreground/80">{slide.text}</p>
           <div className="mt-9">
-            <Button asChild size="lg" className="rounded-none bg-background px-8 text-xs uppercase tracking-[0.22em] text-foreground hover:bg-background/90">
+            <Button asChild size="lg" className="shine rounded-none bg-background px-8 text-xs uppercase tracking-[0.22em] text-foreground hover:bg-background/90">
               <Link to={slide.ctaPath}>{slide.cta}</Link>
             </Button>
           </div>
