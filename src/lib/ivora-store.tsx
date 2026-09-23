@@ -30,6 +30,7 @@ type IvoraStore = {
   isCartOpen: boolean;
   isSearchOpen: boolean;
   miniCart: MiniCartProduct | null;
+  dismissMiniCart: () => void;
   openCart: () => void;
   closeCart: () => void;
   openSearch: () => void;
@@ -70,16 +71,30 @@ function writeLocal<T>(key: string, value: T) {
 }
 
 export function IvoraProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>(() => readLocal<CartItem[]>("ivora-cart", []));
-  const [wishlist, setWishlist] = useState<string[]>(() => readLocal<string[]>("ivora-wishlist", []));
-  const [orders, setOrders] = useState<Order[]>(() => readLocal<Order[]>("ivora-orders", []));
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    setCart(readLocal<CartItem[]>("ivora-cart", []));
+    setWishlist(readLocal<string[]>("ivora-wishlist", []));
+    setOrders(readLocal<Order[]>("ivora-orders", []));
+    setHydrated(true);
+  }, []);
   const [isCartOpen, setCartOpen] = useState(false);
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [miniCart, setMiniCart] = useState<MiniCartProduct | null>(null);
 
-  useEffect(() => writeLocal("ivora-cart", cart), [cart]);
-  useEffect(() => writeLocal("ivora-wishlist", wishlist), [wishlist]);
-  useEffect(() => writeLocal("ivora-orders", orders), [orders]);
+  useEffect(() => {
+    if (hydrated) writeLocal("ivora-cart", cart);
+  }, [cart, hydrated]);
+  useEffect(() => {
+    if (hydrated) writeLocal("ivora-wishlist", wishlist);
+  }, [wishlist, hydrated]);
+  useEffect(() => {
+    if (hydrated) writeLocal("ivora-orders", orders);
+  }, [orders, hydrated]);
 
   const addToCart = useCallback((product: Product, size?: string, color?: string, quantity = 1) => {
     const selectedSize = size ?? product.sizes[0] ?? "ONE SIZE";
@@ -128,6 +143,8 @@ export function IvoraProvider({ children }: { children: ReactNode }) {
 
   const removeWishlist = useCallback((productId: string) => setWishlist((current) => current.filter((id) => id !== productId)), []);
 
+  const dismissMiniCart = useCallback(() => setMiniCart(null), []);
+
   const moveWishlistToCart = useCallback(
     (product: Product) => {
       addToCart(product);
@@ -165,6 +182,7 @@ export function IvoraProvider({ children }: { children: ReactNode }) {
       isCartOpen,
       isSearchOpen,
       miniCart,
+      dismissMiniCart,
       openCart: () => setCartOpen(true),
       closeCart: () => setCartOpen(false),
       openSearch: () => setSearchOpen(true),
@@ -185,7 +203,7 @@ export function IvoraProvider({ children }: { children: ReactNode }) {
       cartTotal,
       cartCount,
     }),
-    [cart, wishlist, orders, isCartOpen, isSearchOpen, miniCart, addToCart, addManyToCart, updateQuantity, removeFromCart, clearCart, toggleWishlist, removeWishlist, moveWishlistToCart, createOrder, findOrder, cartSubtotal, shipping, cartTotal, cartCount],
+    [cart, wishlist, orders, isCartOpen, isSearchOpen, miniCart, dismissMiniCart, addToCart, addManyToCart, updateQuantity, removeFromCart, clearCart, toggleWishlist, removeWishlist, moveWishlistToCart, createOrder, findOrder, cartSubtotal, shipping, cartTotal, cartCount],
   );
 
   useEffect(() => {
