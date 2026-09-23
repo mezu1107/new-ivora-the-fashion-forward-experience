@@ -225,3 +225,25 @@
 @keyframes ivora-pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
 .pulse-dot { animation: ivora-pulse-dot 1.8s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } .ken-burns, .marquee-track { animation: none !important; } }
+
+/* ===== Wow effects ===== */
+@keyframes ivora-hero-rise {
+  from { opacity: 0; transform: translateY(48px); filter: blur(10px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+.hero-stagger > * { opacity: 0; animation: ivora-hero-rise 1s cubic-bezier(0.22,1,0.36,1) forwards; animation-delay: var(--d, 0s); }
+.tilt { transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.22,1,0.36,1); will-change: transform; }
+.parallax-img { will-change: transform; }
+.magnetic { transition: transform 0.35s cubic-bezier(0.22,1,0.36,1); will-change: transform; }
+@keyframes ivora-scroll-hint {
+  0% { transform: scaleY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.scroll-hint { animation: ivora-scroll-hint 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-stagger > * { opacity: 1; animation: none; }
+  .scroll-hint { animation: none; }
+  .tilt, .magnetic, .parallax-img { transform: none !important; }
+}
