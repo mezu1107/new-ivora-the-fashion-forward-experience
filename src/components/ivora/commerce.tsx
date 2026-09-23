@@ -576,6 +576,7 @@ export function ProductCard({ product }: { product: Product }) {
             {product.stock < 8 ? <Badge>LOW STOCK</Badge> : null}
           </div>
         </div>
+        </Tilt>
       </Link>
       <Button
         variant="glass"
