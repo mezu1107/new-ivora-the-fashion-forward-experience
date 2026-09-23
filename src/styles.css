@@ -208,3 +208,20 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- IVORA micro-animations ---------- */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1); will-change: opacity, transform; }
+.reveal.is-visible { opacity: 1; transform: none; }
+@keyframes ivora-kenburns { from { transform: scale(1.02); } to { transform: scale(1.12); } }
+.ken-burns { animation: ivora-kenburns 9s ease-out forwards; }
+@keyframes ivora-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee-track { animation: ivora-marquee 32s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+.shine { position: relative; overflow: hidden; }
+.shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, color-mix(in oklab, white 45%, transparent) 50%, transparent 70%); transform: translateX(-120%); transition: transform 0.8s ease; pointer-events: none; }
+.shine:hover::after { transform: translateX(120%); }
+.lift { transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s ease; }
+.lift:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -20px color-mix(in oklab, var(--foreground) 35%, transparent); }
+@keyframes ivora-pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
+.pulse-dot { animation: ivora-pulse-dot 1.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } .ken-burns, .marquee-track { animation: none !important; } }
