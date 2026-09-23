@@ -300,6 +300,69 @@ export function Reveal({ children, className = "", as = "div" }: { children: Rea
   );
 }
 
+const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+export function Tilt({ children, className = "", max = 6 }: { children: React.ReactNode; className?: string; max?: number }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const onMove = (event: React.MouseEvent) => {
+    const el = ref.current;
+    if (!el || prefersReducedMotion()) return;
+    const rect = el.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width - 0.5;
+    const py = (event.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(900px) rotateX(${(-py * max).toFixed(2)}deg) rotateY(${(px * max).toFixed(2)}deg)`;
+  };
+  const onLeave = () => { if (ref.current) ref.current.style.transform = ""; };
+  return (
+    <div ref={ref} className={`tilt ${className}`} onMouseMove={onMove} onMouseLeave={onLeave}>
+      {children}
+    </div>
+  );
+}
+
+export function Parallax({ children, className = "", speed = 0.12 }: { children: React.ReactNode; className?: string; speed?: number }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    let raf = 0;
+    const update = () => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const progress = (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight;
+      el.style.transform = `translateY(${(-progress * speed * 100).toFixed(2)}%)`;
+    };
+    const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, [speed]);
+  return (
+    <div ref={ref} className={`parallax-img ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function Magnetic({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const onMove = (event: React.MouseEvent) => {
+    const el = ref.current;
+    if (!el || prefersReducedMotion()) return;
+    const rect = el.getBoundingClientRect();
+    const dx = (event.clientX - rect.left - rect.width / 2) * 0.18;
+    const dy = (event.clientY - rect.top - rect.height / 2) * 0.28;
+    el.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+  };
+  const onLeave = () => { if (ref.current) ref.current.style.transform = ""; };
+  return (
+    <div ref={ref} className={`magnetic inline-block ${className}`} onMouseMove={onMove} onMouseLeave={onLeave}>
+      {children}
+    </div>
+  );
+}
+
 function MarqueeStrip() {
   const items = ["New Season AW26", "Complimentary delivery over $250", "The Signature Jacket — back in stock", "Free returns within 30 days", "Limited Edition Drop 03"];
   const row = [...items, ...items];
