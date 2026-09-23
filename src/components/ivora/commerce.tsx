@@ -345,7 +345,7 @@ function SplitBanners() {
   return (
     <section className="mx-auto grid max-w-[1500px] gap-5 px-5 py-20 sm:px-8 md:grid-cols-[1.1fr_0.9fr] lg:px-12">
       <Reveal>
-        <Link to="/shop" search={{ category: "Accessories" } as never} className="lift group relative block h-[560px] overflow-hidden rounded-sm focus-ivora">
+        <Link to="/shop" className="lift group relative block h-[560px] overflow-hidden rounded-sm focus-ivora">
           <img src={bannerAccessories} alt="IVORA accessories: tote, sneakers and jewelry" width={1200} height={1408} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105" />
           <div className="absolute inset-x-5 bottom-5 glass-panel-strong rounded-sm p-6">
             <p className="editorial-label">The Finishing Edit</p>
