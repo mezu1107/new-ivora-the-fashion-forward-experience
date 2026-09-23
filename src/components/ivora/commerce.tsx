@@ -483,6 +483,10 @@ function HeroCarousel() {
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/35 to-primary/10" />
       <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-transparent to-transparent" />
+      <div className="absolute bottom-0 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 pb-6 text-primary-foreground/70 md:flex" aria-hidden="true">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">Scroll</span>
+        <span className="scroll-hint block h-12 w-px bg-primary-foreground/70" />
+      </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1500px] px-5 pb-14 sm:px-8 sm:pb-20 lg:px-12 lg:pb-24">
         <div key={index} className="hero-stagger max-w-3xl text-primary-foreground">
