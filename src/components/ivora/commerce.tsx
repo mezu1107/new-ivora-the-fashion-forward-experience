@@ -485,15 +485,17 @@ function HeroCarousel() {
       <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-transparent to-transparent" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1500px] px-5 pb-14 sm:px-8 sm:pb-20 lg:px-12 lg:pb-24">
-        <div key={index} className="max-w-3xl text-primary-foreground animate-in fade-in slide-in-from-bottom-2 duration-700">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-primary-foreground/80">{slide.label}</p>
-          <h1 className="mt-5 font-display text-[3.4rem] leading-[0.9] sm:text-8xl lg:text-[8.5rem]">{slide.headline}</h1>
-          <p className="mt-7 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/90">{slide.product}</p>
-          <p className="mt-3 max-w-md text-base leading-7 text-primary-foreground/80">{slide.text}</p>
-          <div className="mt-9">
-            <Button asChild size="lg" className="shine rounded-none bg-background px-8 text-xs uppercase tracking-[0.22em] text-foreground hover:bg-background/90">
-              <Link to={slide.ctaPath}>{slide.cta}</Link>
-            </Button>
+        <div key={index} className="hero-stagger max-w-3xl text-primary-foreground">
+          <p style={{ "--d": "0.05s" } as React.CSSProperties} className="text-xs font-semibold uppercase tracking-[0.32em] text-primary-foreground/80">{slide.label}</p>
+          <h1 style={{ "--d": "0.18s" } as React.CSSProperties} className="mt-5 font-display text-[3.4rem] leading-[0.9] sm:text-8xl lg:text-[8.5rem]">{slide.headline}</h1>
+          <p style={{ "--d": "0.34s" } as React.CSSProperties} className="mt-7 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/90">{slide.product}</p>
+          <p style={{ "--d": "0.44s" } as React.CSSProperties} className="mt-3 max-w-md text-base leading-7 text-primary-foreground/80">{slide.text}</p>
+          <div style={{ "--d": "0.58s" } as React.CSSProperties} className="mt-9">
+            <Magnetic>
+              <Button asChild size="lg" className="shine rounded-none bg-background px-8 text-xs uppercase tracking-[0.22em] text-foreground hover:bg-background/90">
+                <Link to={slide.ctaPath}>{slide.cta}</Link>
+              </Button>
+            </Magnetic>
           </div>
         </div>
 
