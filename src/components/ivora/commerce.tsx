@@ -289,7 +289,10 @@ function HeroCarousel() {
 
   return (
     <section
-      className="relative min-h-screen overflow-hidden px-5 pb-12 pt-28 sm:px-8 lg:px-12"
+      id="hero"
+      aria-roledescription="carousel"
+      aria-label="IVORA campaign"
+      className="relative flex h-[100svh] min-h-[600px] w-full items-end overflow-hidden bg-primary"
       onTouchStart={(event) => (touchStart.current = event.touches[0]?.clientX ?? null)}
       onTouchEnd={(event) => {
         if (touchStart.current === null) return;
@@ -299,34 +302,53 @@ function HeroCarousel() {
         touchStart.current = null;
       }}
     >
-      <div className="mx-auto grid min-h-[calc(100vh-8rem)] max-w-[1500px] gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-end">
-        <div className="z-10 max-w-2xl pb-6 lg:pb-16">
-          <p className="editorial-label">{slide.label}</p>
-          <h1 className="mt-4 max-w-xl font-display text-6xl leading-[0.86] sm:text-8xl lg:text-[8.8rem]">{slide.headline}</h1>
-          <p className="mt-6 text-sm uppercase tracking-[0.18em] text-muted-foreground">{slide.product}</p>
-          <p className="mt-4 max-w-md text-base leading-7 text-muted-foreground">{slide.text}</p>
-          <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Button asChild variant="editorial" size="lg">
-              <Link to={slide.ctaPath}>
-                {slide.cta}
-              </Link>
+      {heroSlides.map((hero, heroIndex) => (
+        <img
+          key={hero.headline}
+          src={hero.image}
+          alt={heroIndex === index ? `${hero.product} campaign` : ""}
+          aria-hidden={heroIndex !== index}
+          width={1600}
+          height={1200}
+          loading={heroIndex === 0 ? "eager" : "lazy"}
+          fetchPriority={heroIndex === 0 ? "high" : "auto"}
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ${heroIndex === index ? "opacity-100" : "opacity-0"}`}
+        />
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/35 to-primary/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-transparent to-transparent" />
+
+      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-5 pb-14 sm:px-8 sm:pb-20 lg:px-12 lg:pb-24">
+        <div key={index} className="max-w-3xl text-primary-foreground animate-in fade-in slide-in-from-bottom-2 duration-700">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-primary-foreground/80">{slide.label}</p>
+          <h1 className="mt-5 font-display text-[3.4rem] leading-[0.9] sm:text-8xl lg:text-[8.5rem]">{slide.headline}</h1>
+          <p className="mt-7 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/90">{slide.product}</p>
+          <p className="mt-3 max-w-md text-base leading-7 text-primary-foreground/80">{slide.text}</p>
+          <div className="mt-9">
+            <Button asChild size="lg" className="rounded-none bg-background px-8 text-xs uppercase tracking-[0.22em] text-foreground hover:bg-background/90">
+              <Link to={slide.ctaPath}>{slide.cta}</Link>
             </Button>
-            <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{String(index + 1).padStart(2, "0")} / 03</span>
           </div>
         </div>
-        <div className="relative min-h-[54vh] overflow-hidden rounded-sm lg:min-h-[76vh]">
-          {heroSlides.map((hero, heroIndex) => (
-            <img
-              key={hero.headline}
-              src={hero.image}
-              alt={`${hero.product} campaign`}
-              width={1600}
-              height={1200}
-              loading={heroIndex === 0 ? "eager" : "lazy"}
-              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${heroIndex === index ? "opacity-100" : "opacity-0"}`}
-            />
-          ))}
-          <div className="absolute bottom-5 right-5 flex gap-2">
+
+        <div className="mt-12 flex items-center justify-between gap-4 border-t border-primary-foreground/25 pt-5 text-primary-foreground">
+          <div className="flex items-center gap-4">
+            <span className="text-xs font-semibold tracking-[0.2em]">
+              {String(index + 1).padStart(2, "0")} / {String(heroSlides.length).padStart(2, "0")}
+            </span>
+            <div className="flex gap-2">
+              {heroSlides.map((hero, dot) => (
+                <button
+                  key={hero.headline}
+                  onClick={() => setIndex(dot)}
+                  aria-label={`Go to slide ${dot + 1}`}
+                  aria-current={dot === index}
+                  className={`h-[2px] rounded-full transition-all focus-ivora ${dot === index ? "w-10 bg-primary-foreground" : "w-5 bg-primary-foreground/40"}`}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex gap-2">
             <Button variant="glass" size="icon" onClick={() => go(-1)} aria-label="Previous hero slide">
               <ArrowLeft />
             </Button>
