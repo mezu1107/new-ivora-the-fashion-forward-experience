@@ -8,7 +8,7 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 // On Vercel, build with Nitro's "vercel" preset so the output lands in
 // .vercel/output (Build Output API) and Vercel serves SSR + static assets correctly.
-const isVercel = Boolean(process.env.VERCEL);
+const isVercel = Boolean(process.env["VERCEL"]);
 
 export default defineConfig({
   tanstackStart: {
