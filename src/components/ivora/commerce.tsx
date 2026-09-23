@@ -566,7 +566,8 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative">
       <Link to="/product/$slug" params={{ slug: product.slug }} className="focus-ivora block">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
+        <Tilt max={5}>
+        <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted shadow-[0_18px_50px_-24px_rgba(17,17,17,0.35)]">
           <img src={product.images[0]} alt={product.name} width={900} height={1200} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" />
           <img src={product.images[1]} alt={`${product.name} alternate view`} width={900} height={1200} loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           <div className="absolute left-3 top-3 flex gap-2">
