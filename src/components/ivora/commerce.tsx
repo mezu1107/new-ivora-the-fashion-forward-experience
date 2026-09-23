@@ -384,7 +384,9 @@ function DropBanner() {
   return (
     <Reveal as="section" className="px-5 sm:px-8 lg:px-12">
       <Link to="/collections" className="group relative mx-auto block h-[78vh] min-h-[520px] max-w-[1500px] overflow-hidden rounded-sm focus-ivora">
-        <img src={bannerDrop} alt="IVORA Drop 03 olive wool overcoat" width={1600} height={912} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-105" />
+        <Parallax className="absolute inset-0" speed={0.1}>
+          <img src={bannerDrop} alt="IVORA Drop 03 olive wool overcoat" width={1600} height={912} loading="lazy" className="h-full w-full scale-110 object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.16]" />
+        </Parallax>
         <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/15 to-transparent" />
         <div className="relative flex h-full flex-col justify-between p-8 text-primary-foreground sm:p-12 lg:p-16">
           <span className="glass-panel inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground">
@@ -649,7 +651,11 @@ function EditorialBanner() {
           <Link to="/collections">Explore Collection</Link>
         </Button>
       </div>
-      <img src={campaignImages.one} alt="THE IVORA COLLECTION" width={1600} height={1200} loading="lazy" className="min-h-[520px] w-full rounded-sm object-cover" />
+      <div className="overflow-hidden rounded-sm">
+        <Parallax speed={0.08}>
+          <img src={campaignImages.one} alt="THE IVORA COLLECTION" width={1600} height={1200} loading="lazy" className="min-h-[520px] w-full scale-110 object-cover" />
+        </Parallax>
+      </div>
     </section>
   );
 }
