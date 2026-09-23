@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 
+import { Button } from "@/components/ui/button";
 import { ProductDetailPage } from "@/components/ivora/commerce";
 import { getProductBySlug } from "@/lib/ivora-data";
 
@@ -47,4 +48,3 @@ function ProductNotFound() {
   );
 }
 
-import { Button } from "@/components/ui/button";

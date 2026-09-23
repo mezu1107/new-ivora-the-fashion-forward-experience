@@ -278,7 +278,7 @@ export function HomePage() {
 function HeroCarousel() {
   const [index, setIndex] = useState(0);
   const touchStart = useRef<number | null>(null);
-  const slide = heroSlides[index];
+  const slide = heroSlides[index]!;
 
   useEffect(() => {
     const timer = window.setInterval(() => setIndex((current) => (current + 1) % heroSlides.length), 6500);
@@ -1254,7 +1254,7 @@ function OrderSummary({ cart, subtotal, shipping, total, actionLabel }: { cart: 
   );
 }
 
-export function OrderConfirmationPage({ order }: { order?: Order }) {
+export function OrderConfirmationPage({ order }: { order: Order | undefined }) {
   if (!order) {
     return (
       <main className="grid min-h-screen place-items-center px-5 text-center">
