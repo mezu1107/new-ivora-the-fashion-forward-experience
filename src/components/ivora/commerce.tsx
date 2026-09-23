@@ -300,6 +300,69 @@ export function Reveal({ children, className = "", as = "div" }: { children: Rea
   );
 }
 
+const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+export function Tilt({ children, className = "", max = 6 }: { children: React.ReactNode; className?: string; max?: number }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const onMove = (event: React.MouseEvent) => {
+    const el = ref.current;
+    if (!el || prefersReducedMotion()) return;
+    const rect = el.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width - 0.5;
+    const py = (event.clientY - rect.top) / rect.height - 0.5;
+    el.style.transform = `perspective(900px) rotateX(${(-py * max).toFixed(2)}deg) rotateY(${(px * max).toFixed(2)}deg)`;
+  };
+  const onLeave = () => { if (ref.current) ref.current.style.transform = ""; };
+  return (
+    <div ref={ref} className={`tilt ${className}`} onMouseMove={onMove} onMouseLeave={onLeave}>
+      {children}
+    </div>
+  );
+}
+
+export function Parallax({ children, className = "", speed = 0.12 }: { children: React.ReactNode; className?: string; speed?: number }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+    let raf = 0;
+    const update = () => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const progress = (rect.top + rect.height / 2 - window.innerHeight / 2) / window.innerHeight;
+      el.style.transform = `translateY(${(-progress * speed * 100).toFixed(2)}%)`;
+    };
+    const onScroll = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, [speed]);
+  return (
+    <div ref={ref} className={`parallax-img ${className}`}>
+      {children}
+    </div>
+  );
+}
+
+export function Magnetic({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const onMove = (event: React.MouseEvent) => {
+    const el = ref.current;
+    if (!el || prefersReducedMotion()) return;
+    const rect = el.getBoundingClientRect();
+    const dx = (event.clientX - rect.left - rect.width / 2) * 0.18;
+    const dy = (event.clientY - rect.top - rect.height / 2) * 0.28;
+    el.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+  };
+  const onLeave = () => { if (ref.current) ref.current.style.transform = ""; };
+  return (
+    <div ref={ref} className={`magnetic inline-block ${className}`} onMouseMove={onMove} onMouseLeave={onLeave}>
+      {children}
+    </div>
+  );
+}
+
 function MarqueeStrip() {
   const items = ["New Season AW26", "Complimentary delivery over $250", "The Signature Jacket — back in stock", "Free returns within 30 days", "Limited Edition Drop 03"];
   const row = [...items, ...items];
@@ -321,7 +384,9 @@ function DropBanner() {
   return (
     <Reveal as="section" className="px-5 sm:px-8 lg:px-12">
       <Link to="/collections" className="group relative mx-auto block h-[78vh] min-h-[520px] max-w-[1500px] overflow-hidden rounded-sm focus-ivora">
-        <img src={bannerDrop} alt="IVORA Drop 03 olive wool overcoat" width={1600} height={912} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-105" />
+        <Parallax className="absolute inset-0" speed={0.1}>
+          <img src={bannerDrop} alt="IVORA Drop 03 olive wool overcoat" width={1600} height={912} loading="lazy" className="h-full w-full scale-110 object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-[1.16]" />
+        </Parallax>
         <div className="absolute inset-0 bg-gradient-to-r from-primary/60 via-primary/15 to-transparent" />
         <div className="relative flex h-full flex-col justify-between p-8 text-primary-foreground sm:p-12 lg:p-16">
           <span className="glass-panel inline-flex w-fit items-center gap-2 rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground">
@@ -420,17 +485,23 @@ function HeroCarousel() {
       ))}
       <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/35 to-primary/10" />
       <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-transparent to-transparent" />
+      <div className="absolute bottom-0 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-3 pb-6 text-primary-foreground/70 md:flex" aria-hidden="true">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">Scroll</span>
+        <span className="scroll-hint block h-12 w-px bg-primary-foreground/70" />
+      </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1500px] px-5 pb-14 sm:px-8 sm:pb-20 lg:px-12 lg:pb-24">
-        <div key={index} className="max-w-3xl text-primary-foreground animate-in fade-in slide-in-from-bottom-2 duration-700">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-primary-foreground/80">{slide.label}</p>
-          <h1 className="mt-5 font-display text-[3.4rem] leading-[0.9] sm:text-8xl lg:text-[8.5rem]">{slide.headline}</h1>
-          <p className="mt-7 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/90">{slide.product}</p>
-          <p className="mt-3 max-w-md text-base leading-7 text-primary-foreground/80">{slide.text}</p>
-          <div className="mt-9">
-            <Button asChild size="lg" className="shine rounded-none bg-background px-8 text-xs uppercase tracking-[0.22em] text-foreground hover:bg-background/90">
-              <Link to={slide.ctaPath}>{slide.cta}</Link>
-            </Button>
+        <div key={index} className="hero-stagger max-w-3xl text-primary-foreground">
+          <p style={{ "--d": "0.05s" } as React.CSSProperties} className="text-xs font-semibold uppercase tracking-[0.32em] text-primary-foreground/80">{slide.label}</p>
+          <h1 style={{ "--d": "0.18s" } as React.CSSProperties} className="mt-5 font-display text-[3.4rem] leading-[0.9] sm:text-8xl lg:text-[8.5rem]">{slide.headline}</h1>
+          <p style={{ "--d": "0.34s" } as React.CSSProperties} className="mt-7 text-xs font-semibold uppercase tracking-[0.24em] text-primary-foreground/90">{slide.product}</p>
+          <p style={{ "--d": "0.44s" } as React.CSSProperties} className="mt-3 max-w-md text-base leading-7 text-primary-foreground/80">{slide.text}</p>
+          <div style={{ "--d": "0.58s" } as React.CSSProperties} className="mt-9">
+            <Magnetic>
+              <Button asChild size="lg" className="shine rounded-none bg-background px-8 text-xs uppercase tracking-[0.22em] text-foreground hover:bg-background/90">
+                <Link to={slide.ctaPath}>{slide.cta}</Link>
+              </Button>
+            </Magnetic>
           </div>
         </div>
 
@@ -495,7 +566,8 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="group relative">
       <Link to="/product/$slug" params={{ slug: product.slug }} className="focus-ivora block">
-        <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted">
+        <Tilt max={5}>
+        <div className="relative aspect-[3/4] overflow-hidden rounded-sm bg-muted shadow-[0_18px_50px_-24px_rgba(17,17,17,0.35)]">
           <img src={product.images[0]} alt={product.name} width={900} height={1200} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]" />
           <img src={product.images[1]} alt={`${product.name} alternate view`} width={900} height={1200} loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           <div className="absolute left-3 top-3 flex gap-2">
@@ -504,6 +576,7 @@ export function ProductCard({ product }: { product: Product }) {
             {product.stock < 8 ? <Badge>LOW STOCK</Badge> : null}
           </div>
         </div>
+        </Tilt>
       </Link>
       <Button
         variant="glass"
@@ -580,7 +653,11 @@ function EditorialBanner() {
           <Link to="/collections">Explore Collection</Link>
         </Button>
       </div>
-      <img src={campaignImages.one} alt="THE IVORA COLLECTION" width={1600} height={1200} loading="lazy" className="min-h-[520px] w-full rounded-sm object-cover" />
+      <div className="overflow-hidden rounded-sm">
+        <Parallax speed={0.08}>
+          <img src={campaignImages.one} alt="THE IVORA COLLECTION" width={1600} height={1200} loading="lazy" className="min-h-[520px] w-full scale-110 object-cover" />
+        </Parallax>
+      </div>
     </section>
   );
 }
